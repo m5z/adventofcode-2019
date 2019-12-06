@@ -51,7 +51,7 @@ def main():
         nodes[edge[0]].neighbors.append(nodes[edge[1]])
         nodes[edge[1]].neighbors.append(nodes[edge[0]])
 
-    print(count_orbits(nodes, nodes['COM']))  # 151345
+    print(count_orbits(nodes, nodes['COM']))
 
     reset_dist(nodes)
 

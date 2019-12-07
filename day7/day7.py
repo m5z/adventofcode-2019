@@ -1,29 +1,49 @@
 import itertools
+from collections import deque
 
 
 def main():
     with open('day7_input.txt') as f:
         ops = [int(x) for x in f.readline().rstrip().split(',')]
 
-    part1(ops)
+    print(find_max_output(ops, [0, 1, 2, 3, 4]))
+    print(find_max_output(ops, [5, 6, 7, 8, 9]))
 
 
-def part1(ops):
-    max_output = 0
-    for config in itertools.permutations(range(5)):
-        input_value = 0
-        for phase in config:
-            output_list = run(ops, [phase, input_value])
-            input_value = output_list[0]
-        max_output = max(max_output, input_value)
-    print(max_output)  # 67023
-
-
-def run(ops, input_list):
+def find_max_output(ops, phases):
     ops = list(ops)
 
+    max_output = 0
+
+    for config in itertools.permutations(phases):
+        amp_ops = [list(ops) for _ in range(len(config))]
+        amp_inputs = [deque([phase]) for phase in config]
+        amp_inputs[0].appendleft(0)
+
+        amps = [run(amp_ops[i], amp_inputs[i]) for i in range(len(config))]
+
+        i = 0
+        while True:
+            next_i = (i + 1) % len(config)
+            try:
+                output = next(amps[i])
+                amp_inputs[next_i].appendleft(output)
+            except StopIteration:
+                if i == len(config) - 1:
+                    break
+            i = next_i
+
+        max_output = max(max_output, output)
+
+    return max_output
+
+
+class EndOfExecution(Exception):
+    pass
+
+
+def run(ops, inputs):
     input_i = 0
-    output_list = []
 
     i = 0
     while True:
@@ -38,13 +58,13 @@ def run(ops, input_list):
             ops[ops[i + 3]] = a * b
             i += 4
         elif c == 3:
-            n = input_list[input_i]
+            n = inputs.pop()
             input_i += 1
             ops[ops[i + 1]] = n
             i += 2
         elif c == 4:
             a = read_1_param(ops, i, m)
-            output_list.append(a)
+            yield a
             i += 2
         elif c == 5:
             a, b = read_2_params(ops, i, m)
@@ -73,7 +93,7 @@ def run(ops, input_list):
                 ops[ops[i + 3]] = 0
             i += 4
         elif c == 99:
-            return output_list
+            return
         else:
             raise Exception
 

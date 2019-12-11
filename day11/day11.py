@@ -50,7 +50,7 @@ def print_panels(panels):
     for i in range(max_i, min_i - 1, -1):
         line = []
         for j in range(max_j, min_j - 1, -1):
-            line.append('.' if panels[(i, j)] == 0 else '#')
+            line.append(' ' if panels[(i, j)] == 0 else '#')
         print(''.join(line))
 
 

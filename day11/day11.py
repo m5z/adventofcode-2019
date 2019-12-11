@@ -5,8 +5,15 @@ def main():
     with open('day11_input.txt') as f:
         ops = [int(x) for x in f.readline().rstrip().split(',')]
 
-    inputs = deque([0])
+    panels = paint(ops, 0)
+    print(len(panels.values()))
 
+    panels = paint(ops, 1)
+    print_panels(panels)
+
+
+def paint(ops, start):
+    inputs = deque([start])
     comp = Intcode(ops)
     program = comp.run(inputs)
     panels = defaultdict(lambda: 0)
@@ -31,7 +38,20 @@ def main():
 
             inputs.appendleft(panels[(i, j)])
     except StopIteration:
-        print(len(panels.values()))
+        return panels
+
+
+def print_panels(panels):
+    i_sorted = sorted(i for i, _ in panels.keys())
+    min_i, max_i = i_sorted[0], i_sorted[-1]
+    j_sorted = sorted(j for _, j in panels.keys())
+    min_j, max_j = j_sorted[0], j_sorted[-1]
+
+    for i in range(max_i, min_i - 1, -1):
+        line = []
+        for j in range(max_j, min_j - 1, -1):
+            line.append('.' if panels[(i, j)] == 0 else '#')
+        print(''.join(line))
 
 
 class Intcode:

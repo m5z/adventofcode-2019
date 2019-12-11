@@ -8,7 +8,30 @@ def main():
     inputs = deque([0])
 
     comp = Intcode(ops)
-    comp.run(inputs)
+    program = comp.run(inputs)
+    panels = defaultdict(lambda: 0)
+    i, j = 0, 0
+    directions = [(-1, 0), (0, -1), (1, 0), (0, 1)]
+    dir_i = 0
+    try:
+        while True:
+            color = next(program)
+            turn = next(program)
+
+            panels[(i, j)] = color
+
+            if turn == 0:
+                dir_i = (dir_i + 1) % len(directions)
+            elif turn == 1:
+                dir_i = (dir_i - 1) % len(directions)
+            else:
+                raise Exception
+
+            i, j = i - directions[dir_i][0], j - directions[dir_i][1]
+
+            inputs.appendleft(panels[(i, j)])
+    except StopIteration:
+        print(len(panels.values()))
 
 
 class Intcode:
@@ -25,7 +48,6 @@ class Intcode:
 
     def run(self, inputs):
         i = 0
-        inputs = iter(inputs)
         while True:
             c = self.ops[i] % 100
             m = self.ops[i] // 100

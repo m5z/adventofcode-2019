@@ -1,24 +1,21 @@
-from collections import defaultdict
-
-
 def main():
     with open('day10_input.txt') as f:
         m = [list(line.rstrip()) for line in f.readlines()]
 
-    visibility_matrix = [[0] * len(m[0]) for _ in range(len(m))]
+    part1(m)
 
+
+def part1(m):
     max_count = 0
+    pos = None
     for i in range(len(m)):
         for j in range(len(m[i])):
             if m[i][j] == '#':
                 c = count(m, i, j)
-                visibility_matrix[i][j] = c
-                max_count = max(max_count, c)
-
-    # for line in visibility_matrix:
-    #     print(line)
-
-    print(max_count)
+                if c > max_count:
+                    max_count = c
+                    pos = (i, j)
+    print(max_count, pos)
 
 
 def count(m, i, j):
